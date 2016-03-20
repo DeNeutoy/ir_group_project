@@ -197,25 +197,22 @@ def data_iterator(data_path):
         yield (X[i], Y[i])
 
 
+# TODO: write a splitter for train/val/test
 
 def preprocess(input_size, output_size, save_data_path):
-
     # read data by date
     date_to_data = read_data()
-
     # group data by week
     week_to_data, missing_weeks = group_by_week(date_to_data)
-
     # create continuous chunks which split at missing weeks
     continuous_chunks = create_chunks(week_to_data, missing_weeks)
-
     # create individual data instances for training NN
     data = generate_dataset(continuous_chunks, input_size, output_size)
     # save instances
     pickle.dump(data, open(save_data_path, "wb"))
 
-
-
 if __name__ == "__main__":
+
+    # test to check preprocessing works
     os.chdir("../")
     preprocess(24*7,24,"data/energy/preprocess/NN_data.pkl")
