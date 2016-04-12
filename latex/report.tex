@@ -1,0 +1,122 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{nips15submit_e,times}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[pdftex]{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
+
+
+\title{Information Retrieval and DataMining:\\
+		Application of Neural Networks to Time Series
+}
+
+
+\author{
+Mark Neumann, Alexander Chapovskiy and Zheng Tian\\ %thanks{} \\
+UCL\\
+\texttt{mark.neumann.15@ucl.ac.uk} \\
+\texttt{alexander.chapovskiy.15@ucl.ac.uk} \\
+\texttt{zheng.tian.11@ucl.ac.uk@ucl.ac.uk} \\
+}
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\MSEtest}{MSE_{\rm \scriptsize test}}
+%\DeclareMathOperator*{\tanh}{tanh}
+
+
+\nipsfinalcopy % Uncomment for camera-ready version
+
+\begin{document}
+
+
+\maketitle
+\graphicspath{{images/}}
+
+\begin{abstract}
+This is a report for group project in the Information Retrieval and Data 
+Mining course. In this report we investigate different deep neural network
+architectures on the time series. In particular, we apply neural 
+networks to energy load and household energy consumption datasets.
+\end{abstract}
+
+
+\section{Introduction}
+\label{sec:intro}
+
+\section{Datasets}
+\label{sec:data}
+
+\subsection{Energy Load}
+\label{sec:data/energy}
+
+!!!Description of the dataset
+
+This dataset was used in the Kaggle competition. After the competition
+the winners of the competition published their approaches, 
+\cite{energy_kaggle}.
+Mostly the approach is linear regression with non-linear features.
+
+Neural networks are pplied to this dataset in \cite{enery_nn}
+
+!!!! Before we apply out models to the dataset we perform the 
+following preprocessing.\\
+
+\subsection{Household Energy Consumption}
+\label{sec:data/house}
+
+\section{Regression with Non-linear Features}
+\label{sec:reg}
+
+\section{Reccurent Neural Networks}
+\label{sec:nn}
+
+
+\subsection{Reccurent Neural Network}
+\label{sec:nn/rnn}
+
+\subsection{LSTM}
+\label{sec:nn/lstm}
+
+
+\section{Conclusions}
+
+
+
+
+\begin{thebibliography}{9}
+
+\small{
+
+
+\bibitem{energy_kaggle}
+Tao Hong, Pierre Pinson and Shu Fan, 
+(2014), 
+{\it Global Energy Forecasting Competition 2012.}
+International Journal of Forecasting, 30(2), 357;
+\\
+Charlton, N. and Singleton, C. 
+(2014). 
+{\it A refined parametric model for short term load forecasting.}
+International Journal of Forecasting,
+30(2), 364-368.
+\\
+Souhaib Ben Taieba and Rob J. Hyndmanb,
+(2014), 
+{\it A gradient boosting approach to the Kaggle load forecasting 
+competition.}
+International Journal of Forecasting, 30(2), 382;
+\\
+Lloyd, J. R. (2014), 
+{\it GEFCom2012 hierarchical load forecasting: Gradient boosting machines and Gaussian processes. }
+International Journal of Forecasting, 30(2), 369.
+
+
+}
+
+\end{thebibliography}
+
+\end{document}
