@@ -5,6 +5,9 @@ class SmallConfig(object):
   max_grad_norm = 5
   num_layers = 2
   num_steps = 20
+  # new config params to cope with different size in/outputs
+  input_dim = 24*7
+  output_dim = 24
   hidden_size = 200
   max_epoch = 4
   max_max_epoch = 13
