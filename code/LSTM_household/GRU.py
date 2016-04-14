@@ -82,7 +82,7 @@ def build_model():
 def run_network(model=None, data=None):
     global_start_time = time.time()
     epochs = 1
-    ratio = 0.01
+    ratio = 1
     sequence_length = 50
     path_to_dataset = '../../data/house/household_power_consumption.txt'
 
@@ -122,13 +122,14 @@ def run_network(model=None, data=None):
 
 if __name__ == '__main__':
    model, y_test, predicted = run_network()
+   fig = plt.figure()
    plt.plot(y_test[:1000], label = "True Values")
    plt.plot(predicted[:1000], label = "Predicted Values")
    plt.legend()
    plt.title("True Values and Predicted Values for the first 1000 samples")
    MSE = np.mean(np.square(y_test-predicted))
    plt.xlim([0, 1000])
-   plt.text(50, 5.5, "the mean squared test error is: " + str(MSE))
+   plt.text(70, 2.7, "the mean squared test error is: " + str(MSE))
    print "the mean squared test error is: ", MSE
    plt.show()
-   plt.savefig("GRU")
+   fig.savefig("GRU")
