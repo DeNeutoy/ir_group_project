@@ -35,9 +35,9 @@ def prepare_data(data):
     for case in data:
         week_data = case['next_data']
         for weekday,day_data in enumerate(week_data):
-            for hour in range(N_TEMPS+1):
+            for hour in range(N_HOURS):
 
-                features = np.ones((N_ZONES,))
+                features = np.ones((1,))
 
                 avg_prev_load = np.zeros((N_ZONES,))
                 for j_weekday in range(7):
@@ -50,16 +50,16 @@ def prepare_data(data):
                 # features = np.concatenate((features,T*T),axis=0)
 
                 for iT in range(N_TEMPS):
-                    t = np.ones((N_ZONES,))*day_data['temp'][iT,hour]
+                    t = np.ones((1,))*day_data['temp'][iT,hour]
                     features = np.concatenate((features,t),axis=0)
                     features = np.concatenate((features,t*t),axis=0)
 
 
-                h = np.ones((N_ZONES,))*hour
+                h = np.ones((1,))*hour
                 features = np.concatenate((features,h),axis=0)
                 features = np.concatenate((features,h*h),axis=0)
                 features = np.concatenate((features,h*h*h),axis=0)
-                w = np.ones((N_ZONES,))*weekday
+                w = np.ones((1,))*weekday
                 features = np.concatenate((features,w),axis=0)
                 features = np.concatenate((features,w*w),axis=0)
 
