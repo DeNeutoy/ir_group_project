@@ -1,3 +1,14 @@
+'''
+This model combines RNN with dense layers
+Input to RNN is a sequence of 7 average daily loads and temperatures
+Input to dense leyers is the output from RNN and a vector of (temperatures, day of the week, hour)
+The output of the whole network predicts loads for 20 zones on a particular day of the week and hour.
+This model produces 12/12% accuracy
+run with train1
+'''
+
+
+
 import numpy as np
 import os
 
@@ -19,22 +30,19 @@ from config import *
 # def center_normalize(x):
 #     return (x - K.mean(x)) / K.std(x)
 
-def get_model(nTin, nRNNFeatures, nRNNHidden, \
-              nTin2, nRNNFeatures2, nRNNHidden2,
-              nFeatures,nOutput):
+def get_model(nTin, nRNNFeatures, nRNNHidden,nFeatures,nOutput):
 
     model = Graph()
     #model.add_node(Activation(activation='linear', input_shape=(nFeatures,)),   name="X_input")
     model.add_input(input_shape=(nTin,nRNNFeatures),                            name="RNN_input")
-    model.add_input(input_shape=(nTin2,nRNNFeatures2),                          name="RNN2_input")
     model.add_input(input_shape=(nFeatures,),                                   name="X_input")
 
     # model.add_node(BatchNormalization(),                                        name="rnn_norm",       input="RNN_input")
     # model.add_node(LSTM(nRNNHidden, input_shape=(nTin,nRNNFeatures), activation='relu', return_sequences=False), \
     #                name="rnn", input="rnn_norm")
 
-    # model.add_node(SimpleRNN(nRNNHidden, input_shape=(nTin,nRNNFeatures), activation='tanh', return_sequences=False),\
-    model.add_node(LSTM(nRNNHidden, input_shape=(nTin,nRNNFeatures), activation='tanh', return_sequences=False), \
+    model.add_node(SimpleRNN(nRNNHidden, input_shape=(nTin,nRNNFeatures), activation='relu', return_sequences=False), \
+                   # model.add_node(LSTM(nRNNHidden, input_shape=(nTin,nRNNFeatures), activation='tanh', return_sequences=False), \
                    name="rnn", input="RNN_input")
 
     # model.add_node(LSTM(nRNNHidden, input_shape=(nTin,nRNNFeatures), activation='tanh', return_sequences=True), \
@@ -49,28 +57,22 @@ def get_model(nTin, nRNNFeatures, nRNNHidden, \
     #                name="rnn", input="rnn2")
 
 
-    # model.add_node(SimpleRNN(nRNNHidden2, input_shape=(nTin2,nRNNFeatures2), activation='tanh', return_sequences=False), \
-    model.add_node(LSTM(nRNNHidden2, input_shape=(nTin2,nRNNFeatures2), activation='tanh', return_sequences=False), \
-                   name="rnn_2", input="RNN2_input")
+    model.add_node(Reshape((nRNNHidden+nFeatures,)), merge_mode='concat',       name='reshape',inputs=["rnn","X_input"])
 
-
-    model.add_node(Reshape((nRNNHidden+nRNNHidden2+nFeatures,)), merge_mode='concat',\
-                                                                    name='reshape',inputs=["rnn","rnn_2","X_input"])
-
-    nDense = nRNNHidden+nRNNHidden2+nFeatures
+    nDense = nRNNHidden+nFeatures
 
     model.add_node(BatchNormalization(),                                        name="norm1",       input="reshape")
     model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense1",      input="norm1")
     model.add_node(PReLU(),                                                     name="relu1",       input="dense1")
 
-    model.add_node(BatchNormalization(),                                        name="norm2",       input="relu1")
-    model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense2",      input="norm2")
-    model.add_node(PReLU(),                                                     name="relu2",       input="dense2")
+    # model.add_node(BatchNormalization(),                                        name="norm2",       input="relu1")
+    # model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense2",      input="norm2")
+    # model.add_node(PReLU(),                                                     name="relu2",       input="dense2")
     #
     # model.add_node(BatchNormalization(),                                        name="norm3",       input="relu2")
     # model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense3",      input="norm3")
     # model.add_node(PReLU(),                                                     name="relu3",       input="dense3")
-    #
+
     # model.add_node(BatchNormalization(),                                        name="norm4",       input="relu3")
     # model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense4",      input="norm4")
     # model.add_node(PReLU(),                                                     name="relu4",       input="dense4")
@@ -82,7 +84,7 @@ def get_model(nTin, nRNNFeatures, nRNNHidden, \
     # model.add_node(BatchNormalization(),                                        name="norm6",       input="relu5")
     # model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense6",      input="norm6")
     # model.add_node(PReLU(),                                                     name="relu6",       input="dense6")
-
+    #
     # model.add_node(BatchNormalization(),                                        name="norm7",       input="relu6")
     # model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense7",      input="norm7")
     # model.add_node(PReLU(),                                                     name="relu7",       input="dense7")
@@ -92,7 +94,7 @@ def get_model(nTin, nRNNFeatures, nRNNHidden, \
     # model.add_node(PReLU(),                                                     name="relu8",       input="dense8")
 
 
-    model.add_node(BatchNormalization(),                                        name="norm_out",       input="relu2")
+    model.add_node(BatchNormalization(),                                        name="norm_out",       input="relu1")
     model.add_node(Dense(nOutput, W_regularizer=l2(1e-10)),                     name="dense_out",      input="norm_out")
     model.add_output('out',                                                     input='dense_out')
 
@@ -120,7 +122,6 @@ def model_data(data):
     X = []
     Y = []
     RNN = []
-    RNN2 = []
 
     for case in data:
         week_data = case['prev_data']
@@ -152,23 +153,6 @@ def model_data(data):
             RNN_prev_week.append(RNN_day)
 
         RNN_prev_week = np.array(RNN_prev_week, dtype=np.float32)
-
-        RNN2_prev_week = []
-        for hour in range(N_HOURS):
-            avg =  np.zeros((N_ZONES,))
-            for day_data in week_data:
-                load = day_data["load"][:,hour]
-                avg += load/float(N_HOURS)
-
-            avgT = np.zeros((N_TEMPS,))
-            for day_data in week_data:
-                temp = day_data["temp"][:,hour]
-                avgT += temp/float(N_HOURS)
-            RNN2_day = np.concatenate((avg,avgT),axis=0)
-            RNN2_prev_week.append(RNN2_day)
-
-        RNN2_prev_week = np.array(RNN2_prev_week, dtype=np.float32)
-
 
         week_data = case['next_data']
         for weekday,day_data in enumerate(week_data):
@@ -203,12 +187,10 @@ def model_data(data):
                 Y.append(y)
 
                 RNN.append(RNN_prev_week)
-                RNN2.append(RNN2_prev_week)
 
 
 
     X = np.array(X, dtype=np.float32)
     Y = np.array(Y, dtype=np.float32)  / 1e3
     RNN = np.array(RNN, dtype=np.float32)  / 1e3
-    RNN2 = np.array(RNN2, dtype=np.float32)  / 1e3
-    return {"RNN_input":RNN,"RNN2_input":RNN2, "X_input":X, "out":Y}
+    return {"RNN_input":RNN, "X_input":X, "out":Y}
