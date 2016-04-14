@@ -10,7 +10,7 @@
 
 
 \title{Information Retrieval and DataMining:\\
-		Application of Neural Networks to Time Series
+		Memory Models for Time Series Analysis
 }
 
 
@@ -180,12 +180,20 @@ Peephole connections are a popular addition to the Long Short-Term memory model\
 \qquad \qquad
     \begin{aligned}[c]
     i_{t} &= \sigma(W_{i}H + b_{i})\\
-    o_{t} &= \sigma(W_{o}H + b_{o})\\
-    f_{t} &= \sigma(W_{i}H + b_{i})\\
+    f_{t} &= \sigma(W_{f}H + b_{f})\\
+    o_{t} &= \sigma(W_{o}^{x}x_{t} + W_{o}^{h}h_{t-1} + W_{o}^{c}c_{t} +  + b_{o})\\
     \end{aligned}
 \end{equation}
 
-where the memory is simply appended onto the vector used in the LSTM mechanism. The other functionality remains unchanged. Additionally, some practitioners choose to only apply peephole connections to gates selectively - often, they are only applied to the input and output gates and not the forget gate. Note the effect of peephole connections is difficult to measure accurately, as in a vanilla LSTM, all the gates are implicitly a function of the memory vector, as they are a function of the previous state which is informed by the memory at that point. 
+where the memory is simply appended onto the vector used in the LSTM mechanism for the calculation of the input and forget gates, with the output gate using a different format only because it uses the {\it current} state's memory, rather than the previous one as in the input and forget gates. The other functionality remains unchanged. Additionally, some practitioners choose to only apply peephole connections to gates selectively - often, they are only applied to the input and output gates and not the forget gate. Note the effect of peephole connections is difficult to measure accurately, as in a vanilla LSTM, all the gates are implicitly a function of the memory vector, as they are a function of the previous state which is informed by the memory at that point. Below we present a pictorial representation of how the addition of peephole connections changes the internal cell architecture.
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=0.8 \linewidth]{LSTM_Peepholes.png} 
+\end{center}
+\caption{Here we can clearly see how all gates now have direct interaction with the memory state.}
+\end{figure}
+
 
 
 \section{Results}
@@ -195,7 +203,7 @@ where the memory is simply appended onto the vector used in the LSTM mechanism. 
 
 \section{Conclusions}
 
-
+Overall, we have examined the performance of peephole connections and neural network architectures in general for several tasks, drawing mixed results. 
 
 
 
