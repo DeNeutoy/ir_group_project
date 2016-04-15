@@ -57,7 +57,7 @@ def get_model(nT_in, nT_out,nFeatures, nHidden,nOutput):
     model.add(Dense(nOutput, W_regularizer=l2(1e-10)))
 
 
-    adam = Adam(lr=0.001)
+    adam = Adam(lr=0.01)
     model.compile(optimizer=adam, loss='mse')
 
     return model

@@ -97,7 +97,7 @@ def train(continue_training=False):
     print('-'*50)
     print('Training model...')
     print('-'*50)
-    nIterations  = 300
+    nIterations  = 10000 # 300
     epochs_per_iter = 1
     batch_size = 64 # 1024 # 64
     loss_val_min = sys.float_info.max

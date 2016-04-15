@@ -5,7 +5,7 @@ import copy
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 
-from model import get_model, model_data
+from model2_1 import get_model, model_data
 import json
 
 from config import *
@@ -122,22 +122,27 @@ def train(continue_training=False):
         print('Calculate predictions...')
         Ypred_train = model.predict(input_train, batch_size=batch_size, verbose=1)["out"]
         Ypred_val = model.predict(input_val, batch_size=batch_size, verbose=1)["out"]
+        Ypred_test = model.predict(input_test, batch_size=batch_size, verbose=1)["out"]
         Y_train = input_train["out"]
         Y_val = input_val["out"]
+        Y_test = input_test["out"]
         error_train = np.sqrt(np.mean((Y_train - Ypred_train) * (Y_train - Ypred_train))) / np.mean(Y_train)
         error_val  = np.sqrt(np.mean((Y_val - Ypred_val) * (Y_val - Ypred_val))) / np.mean(Y_val)
+        error_test  = np.sqrt(np.mean((Y_test - Ypred_test) * (Y_test - Ypred_test))) / np.mean(Y_test)
         errors_train.append(error_train)
         errors_val.append(error_val)
-        print("Error train/test = %f / %f" % (error_train, error_val))
+        errors_test.append(error_test)
+        print("Error train/val/test = %f / %f / %f" % (error_train, error_val, error_test))
         print "done."
 
 
 
         print('Save Losses...')
         csv_file = open(output_losses_file, "w")
-        csv_file.write("iter,train_loss,test_loss\n")
+        csv_file.write("iter,train_loss,test_loss,train_error,val_error,test_error\n")
         for i in range(len(losses_train)):
-            csv_file.write("%d,%f,%f,%f,%f\n" % (i, losses_train[i], losses_val[i],errors_train[i],errors_val[i]))
+            csv_file.write("%d,%f,%f,%f,%f,%f\n" % (i, losses_train[i], losses_val[i],\
+                                                    errors_train[i],errors_val[i],errors_test[i]))
         csv_file.close()
         print "done."
 

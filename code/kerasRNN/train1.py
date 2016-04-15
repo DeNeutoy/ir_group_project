@@ -111,20 +111,23 @@ def train(continue_training=False):
         print('Calculate predictions...')
         Ypred_train = model.predict(X_train, batch_size=batch_size, verbose=1)
         Ypred_val = model.predict(X_val, batch_size=batch_size, verbose=1)
+        Ypred_test = model.predict(X_test, batch_size=batch_size, verbose=1)
         error_train = np.sqrt(np.mean((Y_train - Ypred_train) * (Y_train - Ypred_train))) / np.mean(Y_train)
         error_val  = np.sqrt(np.mean((Y_val - Ypred_val) * (Y_val - Ypred_val))) / np.mean(Y_val)
+        error_test  = np.sqrt(np.mean((Y_test - Ypred_test) * (Y_test - Ypred_test))) / np.mean(Y_test)
         errors_train.append(error_train)
         errors_val.append(error_val)
-        print("Error train/test = %f / %f" % (error_train, error_val))
+        errors_test.append(error_test)
+        print("Error train/test = %f / %f / %f" % (error_train, error_val,error_test))
         print "done."
 
 
 
         print('Save Losses...')
         csv_file = open(output_losses_file, "w")
-        csv_file.write("iter,train_loss,test_loss\n")
+        csv_file.write("iter,train_loss,test_loss,train_error,val_error,test_error\n")
         for i in range(len(losses_train)):
-            csv_file.write("%d,%f,%f,%f,%f\n" % (i, losses_train[i], losses_val[i],errors_train[i],errors_val[i]))
+            csv_file.write("%d,%f,%f,%f,%f,%f\n" % (i, losses_train[i], losses_val[i],errors_train[i],errors_val[i],errors_test[i]))
         csv_file.close()
         print "done."
 
