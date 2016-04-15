@@ -1,3 +1,10 @@
+'''
+This file creates simple non-linear fieatures on the energy datset
+and runs regression model on it.
+Produces (15,16)% on training and validation sets
+'''
+
+
 import time
 import csv
 import os
@@ -28,6 +35,9 @@ test_file = "data/energy/preprocess/test.npy"
 #         - the same
 
 def prepare_data(data):
+    '''
+    Calculate feature vectors on the energy dataset
+    '''
 
     X = []
     Y = []
@@ -37,42 +47,34 @@ def prepare_data(data):
         for weekday,day_data in enumerate(week_data):
             for hour in range(N_HOURS):
 
+                # bias
                 features = np.ones((1,))
 
+                # average load over previous week
                 avg_prev_load = np.zeros((N_ZONES,))
                 for j_weekday in range(7):
                     avg_prev_load += np.mean(case["prev_data"][j_weekday]['load'],1)/7
                 features = np.concatenate((features,avg_prev_load),axis=0)
 
-                #
-                # T = day_data['temp'][:,hour]
-                # features = np.concatenate((features,T),axis=0)
-                # features = np.concatenate((features,T*T),axis=0)
-
+                # temperature features for each of the weather stations
                 for iT in range(N_TEMPS):
                     t = np.ones((1,))*day_data['temp'][iT,hour]
                     features = np.concatenate((features,t),axis=0)
                     features = np.concatenate((features,t*t),axis=0)
 
-
+                # hour of the day features
                 h = np.ones((1,))*hour
                 features = np.concatenate((features,h),axis=0)
                 features = np.concatenate((features,h*h),axis=0)
                 features = np.concatenate((features,h*h*h),axis=0)
+
+                # day of the week features
                 w = np.ones((1,))*weekday
                 features = np.concatenate((features,w),axis=0)
                 features = np.concatenate((features,w*w),axis=0)
 
-                # date = day_data["date"]
-                # t = ((date[0]*12+date[1])*30 + date[2])/1000
-                # t = np.ones((N_ZONES,))*t
-                # features = np.concatenate((features,t),axis=0)
-
-                #features = np.log(features)
                 X.append(features)
-
                 y = day_data['load'][:,hour].T
-                #y = np.log(y)
                 Y.append(y)
 
     X = np.array(X)
@@ -80,6 +82,9 @@ def prepare_data(data):
     return (X,Y)
 
 def plot(Y,Y_pred,i=0,iZone=0):
+    '''
+    This functionplots one week of observed and predicted loads
+    '''
     n = N_HOURS*7
     plt.plot(range(n),Y[i*n:(i+1)*n,iZone])
     plt.plot(range(n),Y_pred[i*n:(i+1)*n,iZone])
@@ -111,17 +116,11 @@ def run():
     Y_pred_train = np.dot(W.T,X.T).T
     Y_pred_test  = np.dot(W.T,X_test.T).T
 
-    # Y_pred_train = np.exp(Y_pred_train)
-    # Y_pred_test = np.exp(Y_pred_test)
-    # Y = np.exp(Y)
-    # Y_test = np.exp(Y_test)
     error_train = np.mean((Y - Y_pred_train) * (Y - Y_pred_train))
     error_test  = np.mean((Y_test - Y_pred_test) * (Y_test - Y_pred_test))
     avg_train = np.mean(Y)
     avg_test = np.mean(Y_test)
     print("Error train/test = %f / %f" % (np.sqrt(error_train)/avg_train, np.sqrt(error_test)/avg_test))
-
-
 
     plot(Y,Y_pred_train,i=0,iZone=0)
     print "End."

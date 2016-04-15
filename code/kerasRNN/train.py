@@ -1,3 +1,8 @@
+'''
+This script trains model (two RNNs + deep NN on basic linear features and previous week data),
+makes predictions and analises them
+'''
+
 import os
 import sys
 import gc
@@ -15,23 +20,12 @@ import matplotlib.pyplot as plt
 
 train_file = "data/energy/preprocess/train.npy"
 test_file = "data/energy/preprocess/test.npy"
-#
-# output_losses_file = "output/kerasRNN/hiddenX1/losses.csv"
-# output_weights_best_file = "output/kerasRNN/hiddenX1/weights_best.hdf5"
-# output_weights_file = "output/kerasRNN/hiddenX1/weights.hdf5"
-# nRNNHidden = N_ZONES
-#
-# output_losses_file = "output/kerasRNN/hiddenX2/losses.csv"
-# output_weights_best_file = "output/kerasRNN/hiddenX2/weights_best.hdf5"
-# output_weights_file = "output/kerasRNN/hiddenX2/weights.hdf5"
-# nRNNHidden = (N_ZONES+N_TEMPS)*2
-# nRNNHidden2 = (N_ZONES+N_TEMPS)*2
 
 output_losses_file = "output/kerasRNN/hiddenX4/losses.csv"
 output_weights_best_file = "output/kerasRNN/hiddenX4/weights_best.hdf5"
 output_weights_file = "output/kerasRNN/hiddenX4/weights.hdf5"
-nRNNHidden = (N_ZONES+N_TEMPS)*10
-nRNNHidden2 = (N_ZONES+N_TEMPS)*10
+nRNNHidden = (N_ZONES+N_TEMPS)*2
+nRNNHidden2 = (N_ZONES+N_TEMPS)*2
 
 
 if len(sys.argv)>1:
@@ -42,7 +36,9 @@ else:
 print("Continue_training = %d" % (continue_training))
 
 def split_data(data, split_ratio):
-
+    '''
+     Split data into training and validation seets.
+     '''
     np.random.seed(12345)
     N = len(data)
     idx = np.arange(N)
@@ -54,6 +50,9 @@ def split_data(data, split_ratio):
 
 
 def plot(Y,Y_pred,i=0,iZone=0):
+    '''
+    Plot one week loads for a particular zone. Observed and predicted.
+    '''
     n = N_HOURS*7
     plt.plot(range(n),Y[i*n:(i+1)*n,iZone])
     plt.plot(range(n),Y_pred[i*n:(i+1)*n,iZone])
@@ -65,7 +64,9 @@ def plot(Y,Y_pred,i=0,iZone=0):
 
 
 def train(continue_training=False):
-
+    '''
+      Run training
+    '''
     print('Loading training data...')
     train = np.load(train_file)
     train,val = split_data(train, split_ratio = 0.2)
