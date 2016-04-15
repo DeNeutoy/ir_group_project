@@ -1,3 +1,8 @@
+'''
+This script trains model1_2 (deep NN on basic linear features),makes predictions
+and analises them
+'''
+
 import os
 import sys
 import gc
@@ -12,10 +17,8 @@ from config import *
 import matplotlib.pyplot as plt
 
 
-
 train_file = "data/energy/preprocess/train.npy"
 test_file = "data/energy/preprocess/test.npy"
-
 
 output_losses_file = "output/kerasRNN/dense/losses.csv"
 output_weights_best_file = "output/kerasRNN/dense/weights_best.hdf5"
@@ -29,6 +32,9 @@ else:
 print("Continue_training = %d" % (continue_training))
 
 def split_data(data, split_ratio):
+    '''
+    Split data into training and validation seets.
+    '''
 
     np.random.seed(12345)
     N = len(data)
@@ -41,6 +47,9 @@ def split_data(data, split_ratio):
 
 
 def plot(Y,Y_pred,i=0,iZone=0):
+    '''
+    Plot one week loads for a particular zone. Observed and predicted.
+    '''
     n = N_HOURS*7
     plt.plot(range(n),Y[i*n:(i+1)*n,iZone])
     plt.plot(range(n),Y_pred[i*n:(i+1)*n,iZone])
@@ -52,6 +61,9 @@ def plot(Y,Y_pred,i=0,iZone=0):
 
 
 def train(continue_training=False):
+    '''
+    Run training
+    '''
 
     print('Loading training data...')
     train = np.load(train_file)
@@ -81,17 +93,12 @@ def train(continue_training=False):
     batch_size = 64
     loss_val_min = sys.float_info.max
 
-
-
-
     losses_train = []
     losses_val = []
     losses_test = []
     errors_train = []
     errors_val = []
     errors_test = []
-
-
 
     for iIteration in range(nIterations):
         print('-'*50)
@@ -134,12 +141,6 @@ def train(continue_training=False):
         print('Saving weights...')
         model.save_weights(output_weights_file, overwrite=True)
         if loss_val < loss_val_min:
-            # csv_file = open("output/kerasRNN/accuracy", "w")
-            # csv_file.write("id,actual,predicted\n")
-            # for id in id_to_pred_test.keys():
-            #     csv_file.write("%s,%f,%f\n" % (id, id_to_actual_test[id], id_to_pred_test[id]))
-            # csv_file.close()
-
             loss_val_min = loss_val
             model.save_weights(output_weights_best_file, overwrite=True)
         print "done."

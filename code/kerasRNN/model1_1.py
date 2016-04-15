@@ -21,11 +21,6 @@ from keras import backend as K
 
 from config import *
 
-#
-#
-# def center_normalize(x):
-#     return (x - K.mean(x)) / K.std(x)
-
 def get_model(nT_in, nT_out,nFeatures, nHidden,nOutput):
 
     model = Sequential()
@@ -81,11 +76,6 @@ def model_data(data):
                 w = np.ones((1,))*weekday
                 features = np.concatenate((features,w),axis=0)
                 features = np.concatenate((features,w*w),axis=0)
-
-                # date = day_data["date"]
-                # t = ((date[0]*12+date[1])*30 + date[2])/1000
-                # t = np.ones((N_ZONES,))*t
-                # features = np.concatenate((features,t),axis=0)
 
                 #features = np.log(features)
                 X.append(features)

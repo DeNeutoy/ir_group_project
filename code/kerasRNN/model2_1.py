@@ -3,7 +3,7 @@ This model combines RNN with dense layers
 Input to RNN is a sequence of 7 average daily loads and temperatures
 Input to dense leyers is the output from RNN and a vector of (temperatures, day of the week, hour)
 The output of the whole network predicts loads for 20 zones on a particular day of the week and hour.
-This model produces 12/12% accuracy
+This model produces 12/13% accuracy
 run with train1
 '''
 
@@ -25,34 +25,19 @@ from keras import backend as K
 
 from config import *
 
-#
-#
-# def center_normalize(x):
-#     return (x - K.mean(x)) / K.std(x)
-
 def get_model(nTin, nRNNFeatures, nRNNHidden,nFeatures,nOutput):
+    '''
+    Define RNN+NN model
+    '''
 
     model = Graph()
-    #model.add_node(Activation(activation='linear', input_shape=(nFeatures,)),   name="X_input")
+
     model.add_input(input_shape=(nTin,nRNNFeatures),                            name="RNN_input")
     model.add_input(input_shape=(nFeatures,),                                   name="X_input")
 
-    # model.add_node(BatchNormalization(),                                        name="rnn_norm",       input="RNN_input")
-    # model.add_node(LSTM(nRNNHidden, input_shape=(nTin,nRNNFeatures), activation='relu', return_sequences=False), \
-    #                name="rnn", input="rnn_norm")
-
-    # model.add_node(SimpleRNN(nRNNHidden, input_shape=(nTin,nRNNFeatures), activation='relu', return_sequences=False), \
-    #                # model.add_node(LSTM(nRNNHidden, input_shape=(nTin,nRNNFeatures), activation='tanh', return_sequences=False), \
-    #                name="rnn", input="RNN_input")
 
     model.add_node(LSTM(nRNNHidden, input_shape=(nTin,nRNNFeatures), activation='tanh', return_sequences=True), \
                    name="rnn1", input="RNN_input")
-    # model.add_node(LSTM(nRNNHidden,                                  activation='tanh', return_sequences=True), \
-    #                name="rnn2", input="rnn1")
-    # # model.add_node(LSTM(nRNNHidden,                                  activation='tanh', return_sequences=True), \
-    # #                name="rnn3", input="rnn2")
-    # # model.add_node(LSTM(nRNNHidden,                                  activation='tanh', return_sequences=True), \
-    # #                name="rnn4", input="rnn3")
     model.add_node(LSTM(nRNNHidden,                                  activation='tanh', return_sequences=False), \
                    name="rnn", input="rnn1")
 
@@ -77,23 +62,6 @@ def get_model(nTin, nRNNFeatures, nRNNHidden,nFeatures,nOutput):
     model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense4",      input="norm4")
     model.add_node(PReLU(),                                                     name="relu4",       input="dense4")
 
-    # model.add_node(BatchNormalization(),                                        name="norm5",       input="relu4")
-    # model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense5",      input="norm5")
-    # model.add_node(PReLU(),                                                     name="relu5",       input="dense5")
-    #
-    # model.add_node(BatchNormalization(),                                        name="norm6",       input="relu5")
-    # model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense6",      input="norm6")
-    # model.add_node(PReLU(),                                                     name="relu6",       input="dense6")
-    #
-    # model.add_node(BatchNormalization(),                                        name="norm7",       input="relu6")
-    # model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense7",      input="norm7")
-    # model.add_node(PReLU(),                                                     name="relu7",       input="dense7")
-    #
-    # model.add_node(BatchNormalization(),                                        name="norm8",       input="relu7")
-    # model.add_node(Dense(nDense, W_regularizer=l2(1e-10)),                      name="dense8",      input="norm8")
-    # model.add_node(PReLU(),                                                     name="relu8",       input="dense8")
-
-
     model.add_node(BatchNormalization(),                                        name="norm_out",       input="relu4")
     model.add_node(Dense(nOutput, W_regularizer=l2(1e-10)),                     name="dense_out",      input="norm_out")
     model.add_output('out',                                                     input='dense_out')
@@ -104,7 +72,7 @@ def get_model(nTin, nRNNFeatures, nRNNHidden,nFeatures,nOutput):
 
     return model
 
-
+# data format
 #     - prev_week = 0,1...
 #     - next_week = 1,2...
 #     - prev_data
@@ -118,6 +86,9 @@ def get_model(nTin, nRNNFeatures, nRNNHidden,nFeatures,nOutput):
 #         - the same
 
 def model_data(data):
+    '''
+    Prepare data
+    '''
 
     X = []
     Y = []
@@ -126,18 +97,7 @@ def model_data(data):
     for case in data:
         week_data = case['prev_data']
 
-        # RNN_prev_week = []
-        # for day_data in week_data:
-        #     for hour in range(N_HOURS):
-        #         load = day_data["load"][:,hour].T
-        #         RNN_prev_week.append(load)
-
-        # RNN_prev_week = np.zeros((1,N_ZONES))
-        # for day_data in week_data:
-        #     for hour in range(N_HOURS):
-        #         load = day_data["load"][:,hour].T
-        #         RNN_prev_week += load/7.0/24.0
-
+        # calculate daily averages for previous week
         RNN_prev_week = []
         for day_data in week_data:
             avg =  np.zeros((N_ZONES,))
@@ -160,35 +120,24 @@ def model_data(data):
 
                 features = np.ones((1,))
 
-                # avg_prev_load = np.zeros((N_ZONES,))
-                # for j_weekday in range(7):
-                #     avg_prev_load += np.mean(case["prev_data"][j_weekday]['load'],1)/7.0
-                # features = np.concatenate((features,avg_prev_load),axis=0)
-
+                # temperatures
                 for iT in range(N_TEMPS):
                     t = np.ones((1,))*day_data['temp'][iT,hour]
                     features = np.concatenate((features,t),axis=0)
 
+                # hour of the day
                 h = np.ones((1,))*hour
                 features = np.concatenate((features,h),axis=0)
+
+                # day of the week
                 w = np.ones((1,))*weekday
                 features = np.concatenate((features,w),axis=0)
 
-                # date = day_data["date"]
-                # t = ((date[0]*12+date[1])*30 + date[2])/1000
-                # t = np.ones((N_ZONES,))*t
-                # features = np.concatenate((features,t),axis=0)
-
-                #features = np.log(features)
                 X.append(features)
-
                 y = day_data['load'][:,hour]
-                #y = np.log(y)
                 Y.append(y)
 
                 RNN.append(RNN_prev_week)
-
-
 
     X = np.array(X, dtype=np.float32)
     Y = np.array(Y, dtype=np.float32)  / 1e3

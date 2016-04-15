@@ -23,6 +23,9 @@ from keras import backend as K
 from config import *
 
 def get_model(nT_in, nT_out,nFeatures, nHidden,nOutput):
+    '''
+    Define NN model
+    '''
 
     model = Sequential()
     model.add(Activation(activation='linear', input_shape=(nFeatures,)))
@@ -62,7 +65,7 @@ def get_model(nT_in, nT_out,nFeatures, nHidden,nOutput):
 
     return model
 
-
+# format of the data:
 #     - prev_week = 0,1...
 #     - next_week = 1,2...
 #     - prev_data
@@ -76,6 +79,9 @@ def get_model(nT_in, nT_out,nFeatures, nHidden,nOutput):
 #         - the same
 
 def model_data(data):
+    '''
+    Prepare data for training
+    '''
 
     X = []
     Y = []
@@ -101,16 +107,8 @@ def model_data(data):
                 w = np.ones((1,))*weekday
                 features = np.concatenate((features,w),axis=0)
 
-                # date = day_data["date"]
-                # t = ((date[0]*12+date[1])*30 + date[2])/1000
-                # t = np.ones((N_ZONES,))*t
-                # features = np.concatenate((features,t),axis=0)
-
-                #features = np.log(features)
                 X.append(features)
-
                 y = day_data['load'][:,hour]
-                #y = np.log(y)
                 Y.append(y)
 
     X = np.array(X)
