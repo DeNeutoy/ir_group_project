@@ -219,7 +219,10 @@ discover additional regularities, not captured by the variables above.
 \subsection{Household Energy Consumption}
 \label{sec:data/house}
 
-{\LARGE \color{red} !!!Description of the dataset}
+This dataset comes from UCI-Machine Learning Repository. It records an individual household electric power consumption with a one-minute sampling rate over a period of almost 4 years. Different electrical quantities and some sub-metering values are included. Additionally, this dataset contains some missing values in the measurements (nearly 1.25 percent of the rows), which will provide an opportunity to measure model robustness in addition to performance.
+
+Our task is to predict household global minute-averaged active power (third attribute in raw data) from history. We build a 50 step-length window where we predict the last step's global active power based on the counterpart from previous 49 steps. We slide the window from the beginning to the end of the data set so that we could predict every minute global active power. 
+
 
 
 
