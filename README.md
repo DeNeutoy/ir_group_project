@@ -2,8 +2,12 @@
 
 Energy Load models
 --------------------------------------------
+The data is available on a Kaggle competition page:
+https://www.kaggle.com/c/global-energy-forecasting-competition-2012-load-forecasting/data
+
 To run Energy Load models:
---  first run code_dir/preprocess_energy.py
+--  Copy data to data/energy directory
+--  run code_dir/preprocess_energy.py
     This preprocesses energy loads data and split the data into training and test sets
 --  To run regression model run
     code_dir/model_reg.py
@@ -19,3 +23,4 @@ To run Energy Load models:
     code/kerasRNN/train2.py
     This uses model defined in code/kerasRNN/model.py
     and saves output files in output/kerasRNN/hidden4X
+~
