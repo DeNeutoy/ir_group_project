@@ -495,13 +495,15 @@ is quite a bit more complicated and is harder to train.
 
 For the UCI dataset, we chose to implement the same neural network with 3 different layer structures, namely an LSTM cell, GRU cell and an LSTM with peephole connections, as described above. 
 
-We found that all three models performed extremely well on the prediction task, all achieving around 95\% accuracy. 
+We found that all three models performed extremely well on the prediction task, all achieving around 95\% accuracy. However, we expected the Peephole connections to improve the deviation where timing is important, and as we expected, areas of volatility are more accurately matched by the LSTM with peephole connections than the other models. We achieved a MSEs of 0.046, 0.048 and 0.042 for the LSTM, GRU and LSTM + Peephole models respectively. Although this difference in performance seems minor, the peephole addition provides a relative decrease in error of 9\%. 
 
-
-TABLE
-
-On seeing this similarity, we altered the amount of training data to see if we could identify any robustness in the models. Below we present graphs of the three models trained on 20\% of the training data.
-
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.6]{FullTrainingAllModels.png}	
+\end{center}
+\caption{Example error graphs for all three models, trained on all available data with 5\% held out for a test set.}
+\label{fig:energy/results}
+\end{figure}
 
 
 The above results demonstrate that the single step prediction task is extremely easy for neural networks. However, as we approach these levels of accuracy, we do begin to see distinctions between the LSTMs with and without peephole connections. 

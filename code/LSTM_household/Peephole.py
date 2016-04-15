@@ -41,7 +41,7 @@ def data_power_consumption(path_to_dataset,
     print "Shift : ", result_mean
     print "Data  : ", result.shape
 
-    row = round(0.9 * result.shape[0])
+    row = int(round(0.9 * result.shape[0]))
     train = result[:row, :]
     np.random.shuffle(train)
     X_train = train[:, :-1]
@@ -83,8 +83,8 @@ def build_model():
 def run_network(model=None, data=None):
     global_start_time = time.time()
     epochs = 1
-    ratio = 0.01
-    sequence_length = 50
+    ratio = 0.2
+    sequence_length = 25
     path_to_dataset = '../../data/house/household_power_consumption.txt'
 
     if data is None:
