@@ -82,7 +82,7 @@ def build_model():
 def run_network(model=None, data=None):
     global_start_time = time.time()
     epochs = 1
-    ratio = 1
+    ratio = 0.2
     sequence_length = 50
     path_to_dataset = '../../data/house/household_power_consumption.txt'
 
@@ -132,4 +132,4 @@ if __name__ == '__main__':
    plt.text(70, 2.7, "the mean squared test error is: " + str(MSE))
    print "the mean squared test error is: ", MSE
    plt.show()
-   fig.savefig("GRU")
+   fig.savefig("GRU_50seq_20%data")
