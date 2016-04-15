@@ -59,6 +59,10 @@ One perceived failure of neural networks until recently was their inability to d
 
 In \cite{Sutskever}, Sutskever introduces sequence to sequence neural networks, which utilise two separate networks, one to encode a sentence into a vector representation and the other to decode a vector representation into the model ouptut. These are trained jointly, enabling arbitrary length sequences and particularly enabling non-monotonic transformations. We note that although we do not explore sequence to sequence models in this paper, the underlying cell structure we explore can be used in this architecture and that this is a very interesting area of development for time series models given their nature.  
 
+{\LARGE \color{red} THIS PAPER IS ORGENISED AS FOLLOWS!!!!!!}
+
+
+
 \section{Recurrent Neural Networks}
 \label{sec:nn}
 
@@ -160,7 +164,8 @@ where the memory is simply appended onto the vector used in the LSTM mechanism f
 
 
 
-
+\section{Datasets}
+\label{sec:data}
 
 
 \subsection{Energy Load}
@@ -171,7 +176,7 @@ The dataset contains energy load for 20~power stations over approximately 4~year
 every hour with some weeks missing. 
 The dataset also provides temperatures at 11~weather stations. It is clear that
 there must be correlation between temperature and energy load.
-However, one of the difficulties of the competition was that it is unknown
+However, one of the difficulties is that it is unknown
 which temperature corresponds to which power station. As a matter of fact, 
 it is possible that weather station is located between two power stations
 and is therefore relevant for both. 
@@ -182,7 +187,7 @@ using temperatures available during, and
 temperatures and loads before and after missing weeks. It also required 
 prediction for the week immediately after the end of the dataset
 with no temperature available. 
-As it is unknown, which temperature reading is relevant for a particular
+As it is unknown which temperature reading is relevant for a particular
 power station, the competition also required to
 determine the relevance of weather stations for a particular power station
 statistically.
@@ -198,10 +203,10 @@ the winners of the competition published their approaches,
 Mostly the approaches were based on linear regression with 
 hand crafted non-linear features using various improvements
 such as, for example, gradient boosting.
-In Section~\ref{sec:energy} is apply a regression model with 
+In Section~\ref{sec:energy} we apply a regression model with 
 handcrafted non-linear features to serve as a benchmark.
 We then discuss deep feed-forward Neural Network with simple
-variables, such as temperature, day of the week, hour, {\it etc}
+variables, such as temperature, day of the week, hour, {\it etc},
 for week ahead prediction to see if the network is able to discover
 relevant features. 
 We then discuss a Recurrent Neural Network, which additionally takes
@@ -331,7 +336,7 @@ relevant features automatically.
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[width=0.70\linewidth]{energy_NN_diag.pdf}	
+\includegraphics[width=1\linewidth]{energy_NN_diag.pdf}	
 \end{center}
 \caption{Architecture of feed-forward neural network.}
 \label{fig:energy/nn_diag}
@@ -360,7 +365,7 @@ Implementation%
 \footnote{
 Implementation of the model can be found in directory {\tt KerasRNN}
 in {\tt model1\_2.py}, which is used by {\tt train1.py}.
-} is using Keras/Theano for NN code, which relies of Cuda to run
+} is using Keras/Theano for NN code, which relies on Cuda to run
 on GPU.
 As before we use 20\% of the whole data for final testing (7,056 observations). 
 The remainder we split into 20\% for validation set (5,544 observations), 
@@ -396,14 +401,14 @@ of load as a function of hour, week day, temperature, and average load in
 the previous week. Average load in the previous week was one of the inputs,
 which we had to provide explicitly. In this section we discuss
 Recurrent Neural Network to which we pass the previous week's history
-as an input, instead of passing the average. 
+as an input. 
 We would like to see if the network is able to automatically find relevant 
 features of the history useful for predicting the load.
 
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[width=0.70\linewidth]{energy_RNN_diag.pdf}	
+\includegraphics[width=1\linewidth]{energy_RNN_diag.pdf}	
 \end{center}
 \caption{Architecture of RNN with feed-forward neural network.}
 \label{fig:energy/rnn_diag}
@@ -412,7 +417,7 @@ Fig.~\ref{fig:energy/rnn_diag} shows the architecture of the network.
 \begin{itemize}
 	\item {\bf Input}.
 	The input contains the following information: week-day, hour, 11~temperatures
-	at the same moment. There are 13~inputs in total. Note, that we do not provide
+	at the same hour. There are 13~inputs in total. Note, that we do not provide
 	average of the history as before.
 	\item {\bf RNN Input}.
 	Here we would like to provide the whole previous week history of 
@@ -446,7 +451,7 @@ Fig.~\ref{fig:energy/rnn_diag} shows the architecture of the network.
 \includegraphics[width=0.70\linewidth]{energy_RNN_learning.pdf}	
 \end{center}
 \caption{Error of the RNN-dense network as function of training epoch for 
-training, validaation and test sets.}
+training, validation and test sets.}
 \label{fig:energy/rnn_learn}
 \end{figure}
 We implemented%
@@ -456,12 +461,12 @@ file {\tt  model2\_1.py},
 which should be used together with {\tt train2.py}
 }
 this model using Keras/Theano for neural network implementation, which in turn 
-uses Cuda for GPU calculations. the network is trained using stochastic 
+uses Cuda for GPU calculations. The network is trained using stochastic 
 gradient decent.
 Fig.~\ref{fig:energy/rnn_learn} shows dependence of the relative 
 mean square error as a function of training epoch for training, validation 
 and test sets. One can see that three curves converge very quickly and
-are generally close to each other. In the latter stages of the training they
+are generally close to each other. In the later stages of the training they
 exhibit slight over-fitting, so we apply early stopping by monitoring
 validation error. We obtain errors of $(13,12.5,13.5)\%$ for training,
 validation and test sets respectively.
@@ -473,11 +478,11 @@ This is quite disappointing as the model is quite a bit more complicated.
 However, it is quite possible that dependence on the history 
 (additionally to average) is not large in our dataset.
 Also, it does find the average load, which was provided by hand previously,
-which is also quite satisfying, as in principle this was not guaranteed.
+which is quite satisfying, as in principle this was not guaranteed.
 
 \begin{figure}[h]
 \begin{center}
-\includegraphics[width=0.70\linewidth]{energy_RNN2_diag.pdf}	
+\includegraphics[width=1\linewidth]{energy_RNN2_diag.pdf}	
 \end{center}
 \caption{Architecture of double-RNN with feed-forward neural network.}
 \label{fig:energy/rnn2_diag}
