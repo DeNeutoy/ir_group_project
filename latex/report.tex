@@ -59,11 +59,15 @@ One perceived failure of neural networks until recently was their inability to d
 
 In \cite{Sutskever}, Sutskever introduces sequence to sequence neural networks, which utilise two separate networks, one to encode a sentence into a vector representation and the other to decode a vector representation into the model ouptut. These are trained jointly, enabling arbitrary length sequences and particularly enabling non-monotonic transformations. We note that although we do not explore sequence to sequence models in this paper, the underlying cell structure we explore can be used in this architecture and that this is a very interesting area of development for time series models given their nature.  
 
-{\LARGE \color{red} THIS PAPER IS ORGENISED AS FOLLOWS!!!!!!}
+\subsection{Report organisation and code}
+
+First, we will describe in some detail the differences between the three memory cell configurations we are testing. We then go on to describe the datasets we have produced results on and then we present the results on each of these datasets in order. Note that in order to investigate a multitude of ideas, we have not completed the same analysis on both data sets. On the UCI dataset we explore memory models in some depth, focusing on the internal cell mechanisms. On the Kaggle energy dataset, we explore some more complex architectures, to see if combining sources of information would improve performance.
+
+All code used to generate the results in this paper can be found in the following Github repository: $https://github.com/ucabmrn/ir\_group\_project$. 
 
 
 
-\section{Recurrent Neural Networks}
+\section{Model definitions and diagrams}
 \label{sec:nn}
 
 Below we describe the models applied to the dataset, for which performance can be found in the next section. In addition to vanilla Long Short-Term Memory, we explore several recent innovations over the last few years, including Gated Recurrent Units and peephole connections. 
@@ -168,66 +172,31 @@ where the memory is simply appended onto the vector used in the LSTM mechanism f
 \label{sec:data}
 
 
-\subsection{Energy Load}
+\subsection{Kaggle Energy Load Data}
 \label{sec:data/energy}
 
 In this section we describe a dataset of Energy Load.
-The dataset contains energy load for 20~power stations over approximately 4~years
-every hour with some weeks missing. 
-The dataset also provides temperatures at 11~weather stations. It is clear that
-there must be correlation between temperature and energy load.
-However, one of the difficulties is that it is unknown
-which temperature corresponds to which power station. As a matter of fact, 
-it is possible that weather station is located between two power stations
-and is therefore relevant for both. 
+The dataset, originally used in a Kaggle competition, contains energy load for 20~power stations over approximately 4~years every hour with some weeks missing. The dataset also provides temperatures at 11~weather stations. 
 
-This dataset was used in the Kaggle competition. 
-The competition required a prediction of energy load for the missing weeks
-using temperatures available during, and 
-temperatures and loads before and after missing weeks. It also required 
-prediction for the week immediately after the end of the dataset
-with no temperature available. 
-As it is unknown which temperature reading is relevant for a particular
-power station, the competition also required to
-determine the relevance of weather stations for a particular power station
-statistically.
-Here our goal is to investigate application of neural networks to time series data.
-Therefore we focus on one week ahead prediction of the energy load 
-at each of 20~power stations
-using temperatures during that period and temperatures and loads prior to 
-that week.
+Here our goal is to investigate application of neural networks to time series data. Therefore we focus on one week ahead prediction of the energy load at each of 20~power stations using temperatures during that period and temperatures and loads prior to that week.
 
-After the competition
-the winners of the competition published their approaches, 
-\cite{energy_kaggle}.
-Mostly the approaches were based on linear regression with 
-hand crafted non-linear features using various improvements
-such as, for example, gradient boosting.
-In Section~\ref{sec:energy} we apply a regression model with 
-handcrafted non-linear features to serve as a benchmark.
-We then discuss deep feed-forward Neural Network with simple
-variables, such as temperature, day of the week, hour, {\it etc},
-for week ahead prediction to see if the network is able to discover
-relevant features. 
-We then discuss a Recurrent Neural Network, which additionally takes
-prior week loads and temperatures, in order to see if RNN is able to 
-discover additional regularities, not captured by the variables above.
+After the competition the winners of the competition published their approaches, \cite{energy_kaggle}. Mostly the approaches were based on linear regression with hand crafted non-linear features using various improvements such as gradient boosting. 
 
+In Section~\ref{sec:energy} we apply a regression model with handcrafted non-linear features to serve as a benchmark. We then discuss deep feed-forward Neural Network with simple variables, such as temperature, day of the week, hour, {\it etc},
+for week ahead prediction to see if the network is able to discover relevant features. We then discuss a Recurrent Neural Network, which additionally takes prior week loads and temperatures, in order to see if RNN is able to discover additional regularities, not captured by the variables above.
 
-
-
-\subsection{Household Energy Consumption}
+\subsection{UCI Household Energy Consumption Data}
 \label{sec:data/house}
 
 This dataset comes from UCI-Machine Learning Repository. It records an individual household electric power consumption with a one-minute sampling rate over a period of almost 4 years. Different electrical quantities and some sub-metering values are included. Additionally, this dataset contains some missing values in the measurements (nearly 1.25 percent of the rows), which will provide an opportunity to measure model robustness in addition to performance.
 
-Our task is to predict household global minute-averaged active power (third attribute in raw data) from history. We build a 50 step-length window where we predict the last step's global active power based on the counterpart from previous 49 steps. We slide the window from the beginning to the end of the data set so that we could predict every minute global active power. 
+Our task is to predict household global minute-averaged active power (third attribute in raw data) from history. We build a 50 step-length window where we predict the last step's global active power based on the counterpart from previous 49 steps. We slide the window from the beginning to the end of the data set so that we could predict minute by minute power output over the whole window.
+
+For this dataset, we examine the performance of recurrent neural networks making use of LSTM, GRU and LSTM + Peephole Connection cells. 
 
 
 
-
-
-\section{Prediction of Energy Loads}
+\section{Results on the Kaggle Energy Load Dataset}
 \label{sec:energy}
 
 In this section we discuss different models applied to the Energy Load dataset
@@ -490,15 +459,15 @@ which is quite satisfying, as in principle this was not guaranteed.
 \caption{Architecture of double-RNN with feed-forward neural network.}
 \label{fig:energy/rnn2_diag}
 \end{figure}
-It has to be noted that in the calculations above we made an approximation.
-Instead of passing all $24\times7$ $(20+11)$-dimensional vectors,
-which we could not do for computational reasons,
+It has to be noted that in the calculations above, instead of passing all $24\times7$ $(20+11)$-dimensional vectors which we could not do for computational reasons,
 we  pass $7$, each representing average over each day of the week.
 In this way we hoped that the network would find {\it "long range"}
 regularities on the scale of the week. It is possible that there are
 regularities, which are lost, when averaging intra-day. For example,
 it is possible that load over a day has some particular structure,
 which would help prediction.
+
+
 In order to investigate this dependence we implemented%
 \footnote{
 Implementation can be found in directory {\tt kerasRNN} in file
@@ -521,21 +490,30 @@ is quite a bit more complicated and is harder to train.
 
 
 
-\section{Prediction of Household Energy Consumption}
+\section{Results on the UCI Household Energy Consumption Dataset}
 \label{sec:house}
 
+For the UCI dataset, we chose to implement the same neural network with 3 different layer structures, namely an LSTM cell, GRU cell and an LSTM with peephole connections, as described above. 
+
+We found that all three models performed extremely well on the prediction task, all achieving around 95\% accuracy. 
+
+
+TABLE
+
+On seeing this similarity, we altered the amount of training data to see if we could identify any robustness in the models. Below we present graphs of the three models trained on 20\% of the training data.
+
+
+
+The above results demonstrate that the single step prediction task is extremely easy for neural networks. However, as we approach these levels of accuracy, we do begin to see distinctions between the LSTMs with and without peephole connections. 
 
 
 
 \section{Conclusions}
 \label{sec:conclusions}
 
-{\LARGE \color{red} ADD CONCLUSIONS !!!}
+Overall, we have examined the performance of peephole connections and neural network architectures in general for several tasks, drawing mixed results. Although one of the prediction tasks proved to be easily predictable for the neural networks we tested, it is a reality that the entirety of the previous household energy information would be available for prediction, meaning that this does demonstrably map to a real world task. On balance, we suggest that more experimentation with peephole connections is needed, with more available time and computational resource, as the task that we tested them on was not at the limit of the neural network's capacity, meaning that distinguishing performance was difficult. We have demonstrated that there is the potential for the peephole connections to have a serious impact in the second experiment with the UCI dataset. 
 
-Overall, we have examined the performance of peephole connections and neural network architectures in general for several tasks, drawing mixed results. 
-
-
-
+In the more difficult prediction task of energy load forecasting, we demonstrate how difficult complex neural networks can be to train - complex network architectures still provide serious problems to overcome in this area. 
 
 \begin{thebibliography}{9}
 
@@ -578,7 +556,6 @@ Oriol Vinyals and
 {\it Grammar as a Foreign Language}
 
 \bibitem{LSTM}
-
 Sepp Hochreiter and Jürgen Schmidhuber(1995)
 {\it Long Short-Term Memory}
 
