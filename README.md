@@ -24,3 +24,16 @@ To run Energy Load models:
     This uses model defined in code/kerasRNN/model.py
     and saves output files in output/kerasRNN/hidden4X
 ~
+
+Household reading models
+--------------------------------------------
+The data is available UCI ML page:
+https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption
+
+To run Household LSTM/GRU/PEEPHOLE model:
+-- copy downloaded data(named as "household_power_consumption.txt") to code/LSTM_household directory
+-- run LSTM_household/LSTM.py
+-- run LSTM_household/GRU.py
+-- run LSTM_household/Peephole.py
+
+readers can change the "ratio" parameters to decide the how many percentages of full data set will be used on training and prediction. 
