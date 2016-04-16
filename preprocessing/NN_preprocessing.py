@@ -8,8 +8,8 @@ import calendar
 from config_energy import N_HOURS, N_TEMPS, N_ZONES
 import pickle
 import random
-load_file = "/Users/markneumann/Documents/Machine_Learning/IR_DM/group_project/data/energy/load_history_debug.csv"
-temp_file = "/Users/markneumann/Documents/Machine_Learning/IR_DM/group_project/data/energy/temperature_history.csv"
+load_file = "../data/energy/load_history_debug.csv"
+temp_file = "..data/energy/temperature_history.csv"
 preprocess_dir = "../data/energy/preprocessNN"
 train_file = preprocess_dir + "/train.npy"
 test_file = preprocess_dir + "/test.npy"
@@ -19,7 +19,7 @@ test_file = preprocess_dir + "/test.npy"
 def read_data():
     #
     # this reads the data and groups by date
-    #
+    #/
     data_time = {}
 
     f_data = open(load_file)

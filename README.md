@@ -24,3 +24,17 @@ To run Energy Load models:
     This uses model defined in code/kerasRNN/model.py
     and saves output files in output/kerasRNN/hidden4X
 ~
+
+
+Household Load Forecasting
+--------------------------------------------------
+Data is available here:
+https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption
+
+To run the various models, simply run:
+
+-- GRU.py
+-- LSTM.py
+-- Peephole.py
+
+The custom layer we implemented using the Keras RNN interface can be found in code_keras/kerasRNN/PeepholeLayer.py

@@ -63,7 +63,7 @@ In \cite{Sutskever}, Sutskever introduces sequence to sequence neural networks, 
 
 First, we will describe in some detail the differences between the three memory cell configurations we are testing. We then go on to describe the datasets we have produced results on and then we present the results on each of these datasets in order. Note that in order to investigate a multitude of ideas, we have not completed the same analysis on both data sets. On the UCI dataset we explore memory models in some depth, focusing on the internal cell mechanisms. On the Kaggle energy dataset, we explore some more complex architectures, to see if combining sources of information would improve performance.
 
-All code used to generate the results in this paper can be found in the following Github repository: $https://github.com/ucabmrn/ir\_group\_project$. 
+All code used to generate the results in this paper can be found in the following Github repository: \url{https://github.com/ucabmrn/ir\_group\_project}. 
 
 
 
@@ -337,7 +337,7 @@ Implementation%
 \footnote{
 Implementation of the model can be found in directory {\tt KerasRNN}
 in {\tt model1\_2.py}, which is used by {\tt train1.py}.
-} is using Keras/Theano for NN code, which relies on Cuda to run
+} is using Keras/Theano\cite{Theano} for NN code, which relies on Cuda to run
 on GPU.
 As before we use 20\% of the whole data for final testing (7,056 observations). 
 The remainder we split into 20\% for validation set (5,544 observations), 
@@ -432,7 +432,7 @@ Implementation can be found in directory {\tt KerasRNN} in
 file {\tt  model2\_1.py},
 which should be used together with {\tt train2.py}
 }
-this model using Keras/Theano for neural network implementation, which in turn 
+this model using Keras/Theano \cite{Theano} for neural network implementation, which in turn 
 uses Cuda for GPU calculations. The network is trained using stochastic 
 gradient decent.
 Fig.~\ref{fig:energy/rnn_learn} shows dependence of the relative 
@@ -440,10 +440,10 @@ mean square error as a function of training epoch for training, validation
 and test sets. One can see that three curves converge very quickly and
 are generally close to each other. In the later stages of the training they
 exhibit slight over-fitting, so we apply early stopping by monitoring
-validation error. We obtain errors of $(13,12.5,13.5)\%$ for training,
+validation error. \textbf{We obtain errors of (13,12.5,13.5)\% for training,
 validation and test sets respectively.
-This should be compared with  $(12.5,12.5,13.5)\%$ we obtained
-with NN in Section~\ref{sec:energy/nn}. One can see that results are comparable.
+This should be compared with  (12.5,12.5,13.5)\% we obtained
+with NN in Section~\ref{sec:energy/nn}}. One can see that results are comparable.
 This means that our RNN managed to find the only relevant feature from the history,
 which is the average load over the previous week.
 This is quite disappointing as the model is quite a bit more complicated.
@@ -493,15 +493,17 @@ is quite a bit more complicated and is harder to train.
 \section{Results on the UCI Household Energy Consumption Dataset}
 \label{sec:house}
 
-For the UCI dataset, we chose to implement the same neural network with 3 different layer structures, namely an LSTM cell, GRU cell and an LSTM with peephole connections, as described above. 
+For the UCI dataset, we chose to implement the same neural network with 3 different layer structures, namely an LSTM cell, GRU cell and an LSTM with peephole connections, as described above.\footnote{all (separate) model scripts can be found in the code/LSTM\_Household directory} 
 
-We found that all three models performed extremely well on the prediction task, all achieving around 95\% accuracy. However, we expected the Peephole connections to improve the deviation where timing is important, and as we expected, areas of volatility are more accurately matched by the LSTM with peephole connections than the other models. We achieved a MSEs of 0.046, 0.048 and 0.042 for the LSTM, GRU and LSTM + Peephole models respectively. Although this difference in performance seems minor, the peephole addition provides a relative decrease in error of 9\%. 
+For the model architecture, we used a 3 layer Recurrent Neural Network, making use of the different memory cells described above. The hidden dimension of the RNN we used was 3,50,1 per layer respectively, where the last layer is a fully connected with linear activation functions. For the GRU and LSTM models, we made use of the Keras library with a Theano\cite{Theano} backend. For the Peephole layer, we implemented a custom layer using Keras' RNN interface. \footnote{This custom layer implementation can be found in /code\_keras/kerasRNN/PeepholeLayer.py} 
+
+We found that all three models performed extremely well on the prediction task, all achieving around 95\% accuracy. However, we expected the Peephole connections to improve the deviation where timing is important, and as we expected, areas of volatility are more accurately matched by the LSTM with peephole connections than the other models. \textbf{We achieved a MSEs of 0.046, 0.048 and 0.042 for the LSTM, GRU and LSTM + Peephole models respectively}. Although this difference in performance seems minor, the peephole addition provides a \textbf{relative decrease in error of 9\%}. 
 
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale=0.6]{FullTrainingAllModels.png}	
 \end{center}
-\caption{Example error graphs for all three models, trained on all available data with 5\% held out for a test set.}
+\caption{Example error graphs for all three models, trained on all available data with 5\% held out for a test set. It is clear that around timestep 600, the peephole connections do provide some benefit over the other two models.}
 \label{fig:energy/results}
 \end{figure}
 
@@ -584,6 +586,11 @@ International Journal of Forecasting, 30(2), 369.
 
 
 }
+
+\bibitem{Theano}
+
+F. Bastien, P. Lamblin, R. Pascanu, J. Bergstra, I. Goodfellow, A. Bergeron, N. Bouchard, D. Warde-Farley and Y. Bengio. 
+{\it Theano: new features and speed improvements}, NIPS 2012 deep learning workshop
 
 \end{thebibliography}
 
