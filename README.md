@@ -26,15 +26,16 @@ To run Energy Load models:
 ~
 
 
-Household Load Forecasting
---------------------------------------------------
-Data is available here:
+Household reading models
+--------------------------------------------
+The data is available UCI ML page:
 https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption
 
-To run the various models, simply run:
-
--- GRU.py
--- LSTM.py
--- Peephole.py
+To run Household LSTM/GRU/PEEPHOLE model:
+-- copy downloaded data(named as "household_power_consumption.txt") to code/LSTM_household directory
+-- run LSTM_household/LSTM.py
+-- run LSTM_household/GRU.py
+-- run LSTM_household/Peephole.py
 
 The custom layer we implemented using the Keras RNN interface can be found in code_keras/kerasRNN/PeepholeLayer.py
+readers can change the "ratio" parameters to decide the how many percentages of full data set will be used on training and prediction.
